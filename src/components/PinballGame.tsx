@@ -161,7 +161,7 @@ export function PinballGame() {
           
           {/* 弹珠 */}
           <Ball 
-            position={[0, 4, 0]}
+            position={[0, -3, 0]}
             onDrain={handleDrain}
             onBumperHit={handleBumperHit}
           />

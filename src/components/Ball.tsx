@@ -9,7 +9,7 @@ interface BallProps {
   onBumperHit?: (points: number, position: THREE.Vector3) => void
 }
 
-export function Ball({ position = [0, 5, 0], onDrain, onBumperHit }: BallProps) {
+export function Ball({ position = [0, -3, 0], onDrain, onBumperHit }: BallProps) {
   const [isLaunched, setIsLaunched] = useState(false)
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
@@ -30,13 +30,13 @@ export function Ball({ position = [0, 5, 0], onDrain, onBumperHit }: BallProps) 
     },
   }))
 
-  // 空格键发射
+  // 空格键发射（向上发射）
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !isLaunched) {
         e.preventDefault()
         setIsLaunched(true)
-        api.velocity.set(0, -3, 0) // 向下发射
+        api.velocity.set(0, 8, 0) // 向上发射
       }
     }
 
@@ -48,10 +48,10 @@ export function Ball({ position = [0, 5, 0], onDrain, onBumperHit }: BallProps) 
   useFrame(() => {
     if (ref.current) {
       const pos = ref.current.position
-      if (pos.y < -5) {
-        // 重置弹珠位置
+      if (pos.y < -4.5) {
+        // 重置弹珠位置到底部
         setIsLaunched(false)
-        api.position.set(0, 5, 0)
+        api.position.set(0, -3, 0)
         api.velocity.set(0, 0, 0)
       }
     }
