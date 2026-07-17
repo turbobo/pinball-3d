@@ -1,6 +1,7 @@
 import { useBox, useSphere } from '@react-three/cannon'
 import { useFrame } from '@react-three/fiber'
 import { useRef, useState, useEffect } from 'react'
+import { Environment } from '@react-three/drei'
 import * as THREE from 'three'
 
 interface BallProps {
@@ -58,15 +59,20 @@ export function Ball({ position = [0, -3, 0], onDrain, onBumperHit }: BallProps)
   })
 
   return (
-    <mesh ref={ref as any} castShadow>
-      <sphereGeometry args={[0.2, 32, 32]} />
-      <meshStandardMaterial
-        color="#c0c0c0"
-        metalness={0.9}
-        roughness={0.1}
-        emissive="#404040"
-        emissiveIntensity={0.2}
-      />
-    </mesh>
+    <group>
+      {/* 环境贴图提供真实反射 */}
+      <Environment preset="studio" />
+      
+      {/* 弹珠主体 - Windows 弹球风格 */}
+      <mesh ref={ref as any} castShadow>
+        <sphereGeometry args={[0.2, 64, 64]} />
+        <meshStandardMaterial
+          color="#d4d4d4"
+          metalness={0.95}
+          roughness={0.05}
+          envMapIntensity={1.5}
+        />
+      </mesh>
+    </group>
   )
 }
