@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/cannon'
-import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Ball } from './Ball'
 import { Flippers } from './Flippers'
 import { Bumpers } from './Bumpers'
@@ -13,18 +13,29 @@ export function PinballGame() {
   const [lives, setLives] = useState(3)
   const [combo, setCombo] = useState(0)
   const [gameOver, setGameOver] = useState(false)
+  const comboRef = useRef(0)
+  const comboTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleBumperHit = useCallback((points: number, position: THREE.Vector3) => {
-    const newCombo = combo + 1
+    const newCombo = comboRef.current + 1
+    comboRef.current = newCombo
     const multiplier = Math.min(newCombo, 5) // 最大 5 倍连击
     const earnedPoints = points * multiplier
     
     setScore(prev => prev + earnedPoints)
     setCombo(newCombo)
     
+    // 清除之前的计时器
+    if (comboTimerRef.current) {
+      clearTimeout(comboTimerRef.current)
+    }
+    
     // 连击重置计时器
-    setTimeout(() => setCombo(0), 2000)
-  }, [combo])
+    comboTimerRef.current = setTimeout(() => {
+      comboRef.current = 0
+      setCombo(0)
+    }, 2000)
+  }, [])
 
   const handleDrain = useCallback(() => {
     setLives(prev => {
@@ -93,6 +104,15 @@ export function PinballGame() {
         </div>
       </div>
 
+      {/* 发射提示 */}
+      {!gameOver && lives > 0 && (
+        <div className="absolute bottom-4 right-4 z-10 pointer-events-none">
+          <div className="bg-orange-500/80 backdrop-blur-md rounded-lg px-4 py-2 border border-orange-400 animate-pulse">
+            <div className="text-sm text-white font-bold">按 SPACE 发射弹珠</div>
+          </div>
+        </div>
+      )}
+
       {/* 游戏结束覆盖层 */}
       {gameOver && (
         <div className="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex items-center justify-center">
@@ -133,9 +153,6 @@ export function PinballGame() {
           intensity={1.5}
           castShadow
         />
-
-        {/* 环境 */}
-        <Environment preset="studio" />
 
         {/* 物理世界 */}
         <Physics gravity={[0, -9.82, 0]}>

@@ -18,7 +18,7 @@ export function Bumper({ position, radius = 0.4, points = 100, onHit }: BumperPr
     mass: 0,
     position,
     args: [radius, radius, 0.3, 16],
-    userData: { type: 'bumper' },
+    userData: { type: 'bumper', points },
     onCollide: (e) => {
       if (e.body.userData?.type === 'ball') {
         setIsHit(true)

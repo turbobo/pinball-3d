@@ -1,15 +1,16 @@
 import { useBox, useSphere } from '@react-three/cannon'
 import { useFrame } from '@react-three/fiber'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import * as THREE from 'three'
 
 interface BallProps {
   position?: [number, number, number]
   onDrain?: () => void
-  onBumperHit?: (position: THREE.Vector3) => void
+  onBumperHit?: (points: number, position: THREE.Vector3) => void
 }
 
 export function Ball({ position = [0, 5, 0], onDrain, onBumperHit }: BallProps) {
+  const [isLaunched, setIsLaunched] = useState(false)
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
     position,
@@ -19,15 +20,9 @@ export function Ball({ position = [0, 5, 0], onDrain, onBumperHit }: BallProps) 
       // 检测碰撞对象
       const body = e.body as any
       if (body.userData?.type === 'bumper') {
-        // 弹珠台碰撞
-        onBumperHit?.(new THREE.Vector3(...body.position))
-        // 施加弹开力
-        const force = new THREE.Vector3(
-          (Math.random() - 0.5) * 2,
-          3,
-          (Math.random() - 0.5) * 2
-        )
-        api.applyImpulse(force.toArray(), [0, 0, 0])
+        // 弹珠台碰撞 - 由 Bumper 组件处理弹开力
+        const points = body.userData.points || 100
+        onBumperHit?.(points, new THREE.Vector3(...body.position))
       } else if (body.userData?.type === 'drain') {
         // 排水口碰撞
         onDrain?.()
@@ -35,12 +30,27 @@ export function Ball({ position = [0, 5, 0], onDrain, onBumperHit }: BallProps) 
     },
   }))
 
+  // 空格键发射
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && !isLaunched) {
+        e.preventDefault()
+        setIsLaunched(true)
+        api.velocity.set(0, -3, 0) // 向下发射
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isLaunched, api])
+
   // 检测弹珠是否落入底部
   useFrame(() => {
     if (ref.current) {
       const pos = ref.current.position
       if (pos.y < -5) {
         // 重置弹珠位置
+        setIsLaunched(false)
         api.position.set(0, 5, 0)
         api.velocity.set(0, 0, 0)
       }

@@ -11,6 +11,8 @@ interface FlipperProps {
 
 export function Flipper({ position, side, onFlip }: FlipperProps) {
   const [isPressed, setIsPressed] = useState(false)
+  const targetRotation = useRef(side === 'left' ? 0.3 : -0.3)
+  
   const [ref, api] = useBox(() => ({
     mass: 0,
     position,
@@ -25,24 +27,23 @@ export function Flipper({ position, side, onFlip }: FlipperProps) {
       if (side === 'left' && (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft')) {
         setIsPressed(true)
         onFlip?.()
-        // 挡板向上旋转
-        api.rotation.set(0, 0, side === 'left' ? -0.5 : 0.5)
+        targetRotation.current = -0.5
       }
       if (side === 'right' && (e.key === 'l' || e.key === 'L' || e.key === 'ArrowRight')) {
         setIsPressed(true)
         onFlip?.()
-        api.rotation.set(0, 0, side === 'right' ? 0.5 : -0.5)
+        targetRotation.current = 0.5
       }
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (side === 'left' && (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft')) {
         setIsPressed(false)
-        api.rotation.set(0, 0, side === 'left' ? 0.3 : -0.3)
+        targetRotation.current = 0.3
       }
       if (side === 'right' && (e.key === 'l' || e.key === 'L' || e.key === 'ArrowRight')) {
         setIsPressed(false)
-        api.rotation.set(0, 0, side === 'right' ? -0.3 : 0.3)
+        targetRotation.current = -0.3
       }
     }
 
@@ -54,6 +55,11 @@ export function Flipper({ position, side, onFlip }: FlipperProps) {
       window.removeEventListener('keyup', handleKeyUp)
     }
   }, [side, api, onFlip])
+
+  // 平滑旋转动画
+  useFrame(() => {
+    api.rotation.set(0, 0, targetRotation.current)
+  })
 
   return (
     <mesh ref={ref as any} castShadow>
