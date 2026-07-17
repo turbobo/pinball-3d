@@ -7,12 +7,11 @@ interface BumperProps {
   position: [number, number, number]
   radius?: number
   points?: number
-  color?: string
-  hitColor?: string
+  force?: number
   onHit?: (points: number, position: THREE.Vector3) => void
 }
 
-export function Bumper({ position, radius = 0.4, points = 100, color = '#ff3b30', hitColor = '#ff6b35', onHit }: BumperProps) {
+export function Bumper({ position, radius = 0.4, points = 100, force = 5, onHit }: BumperProps) {
   const [isHit, setIsHit] = useState(false)
   const meshRef = useRef<THREE.Mesh>(null)
 
@@ -26,14 +25,15 @@ export function Bumper({ position, radius = 0.4, points = 100, color = '#ff3b30'
         setIsHit(true)
         onHit?.(points, new THREE.Vector3(...position))
         
-        // 施加弹开力
+        // 施加弹开力（应用心流系统调整）
         const ballBody = e.body as any
-        const force = new THREE.Vector3(
+        const forceMagnitude = force
+        const forceVec = new THREE.Vector3(
           (Math.random() - 0.5) * 3,
           2,
           (Math.random() - 0.5) * 3
-        )
-        ballBody.applyImpulse(force.toArray(), [0, 0, 0])
+        ).normalize().multiplyScalar(forceMagnitude)
+        ballBody.applyImpulse(forceVec.toArray(), [0, 0, 0])
         
         // 重置高亮
         setTimeout(() => setIsHit(false), 200)
@@ -87,9 +87,10 @@ export function Bumper({ position, radius = 0.4, points = 100, color = '#ff3b30'
 
 interface BumpersProps {
   onHit?: (points: number, position: THREE.Vector3) => void
+  force?: number
 }
 
-export function Bumpers({ onHit }: BumpersProps) {
+export function Bumpers({ onHit, force = 5 }: BumpersProps) {
   // Windows 弹球风格：红、黄、绿彩色弹珠台
   const bumperPositions: Array<{ 
     pos: [number, number, number]
@@ -119,8 +120,7 @@ export function Bumpers({ onHit }: BumpersProps) {
           position={bumper.pos}
           radius={bumper.radius}
           points={bumper.points}
-          color={bumper.color}
-          hitColor={bumper.hitColor}
+          force={force}
           onHit={onHit}
         />
       ))}

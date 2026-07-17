@@ -6,17 +6,18 @@ import * as THREE from 'three'
 interface FlipperProps {
   position: [number, number, number]
   side: 'left' | 'right'
+  width?: number
   onFlip?: () => void
 }
 
-export function Flipper({ position, side, onFlip }: FlipperProps) {
+export function Flipper({ position, side, width = 0.8, onFlip }: FlipperProps) {
   const [isPressed, setIsPressed] = useState(false)
   const targetRotation = useRef(side === 'left' ? 0.3 : -0.3)
   
   const [ref, api] = useBox(() => ({
     mass: 0,
     position,
-    args: [0.8, 0.15, 0.15],
+    args: [width, 0.15, 0.15],
     rotation: [0, 0, side === 'left' ? 0.3 : -0.3],
     type: 'Kinematic',
   }))
@@ -63,7 +64,7 @@ export function Flipper({ position, side, onFlip }: FlipperProps) {
 
   return (
     <mesh ref={ref as any} castShadow>
-      <boxGeometry args={[0.8, 0.15, 0.15]} />
+      <boxGeometry args={[width, 0.15, 0.15]} />
       <meshStandardMaterial
         color={isPressed ? '#ff6b35' : '#c0c0c0'}
         metalness={0.7}
@@ -77,19 +78,22 @@ export function Flipper({ position, side, onFlip }: FlipperProps) {
 
 interface FlippersProps {
   onFlip?: (side: 'left' | 'right') => void
+  width?: number
 }
 
-export function Flippers({ onFlip }: FlippersProps) {
+export function Flippers({ onFlip, width = 0.8 }: FlippersProps) {
   return (
     <>
       <Flipper
         position={[-1.5, -3, 0]}
         side="left"
+        width={width}
         onFlip={() => onFlip?.('left')}
       />
       <Flipper
         position={[1.5, -3, 0]}
         side="right"
+        width={width}
         onFlip={() => onFlip?.('right')}
       />
     </>

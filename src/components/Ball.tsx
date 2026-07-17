@@ -2,6 +2,7 @@ import { useBox, useSphere } from '@react-three/cannon'
 import { useFrame } from '@react-three/fiber'
 import { useRef, useState, useEffect } from 'react'
 import * as THREE from 'three'
+import { audioSystem } from '../utils/audio'
 
 interface BallProps {
   position?: [number, number, number]
@@ -30,13 +31,14 @@ export function Ball({ position = [0, -3, 0], onDrain, onBumperHit }: BallProps)
     },
   }))
 
-  // 空格键发射（向上发射）
+  // 空格键发射
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !isLaunched) {
         e.preventDefault()
         setIsLaunched(true)
-        api.velocity.set(0, 8, 0) // 向上发射
+        audioSystem.playLaunch()
+        api.velocity.set(0, -3, 0) // 向下发射
       }
     }
 
