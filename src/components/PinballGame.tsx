@@ -9,7 +9,7 @@ import { PinballTable } from './PinballTable'
 import { ParticleSystem } from './ParticleSystem'
 import { audioSystem } from '../utils/audio'
 import { flowSystem } from '../utils/flowSystem'
-import { achievementSystem, variableRewardSystem, Achievement } from '../utils/achievementSystem'
+import { achievementSystem, variableRewardSystem, type Achievement } from '../utils/achievementSystem'
 import * as THREE from 'three'
 
 export function PinballGame() {

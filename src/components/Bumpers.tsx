@@ -8,10 +8,12 @@ interface BumperProps {
   radius?: number
   points?: number
   force?: number
+  color?: string
+  hitColor?: string
   onHit?: (points: number, position: THREE.Vector3) => void
 }
 
-export function Bumper({ position, radius = 0.4, points = 100, force = 5, onHit }: BumperProps) {
+export function Bumper({ position, radius = 0.4, points = 100, force = 5, color = '#ff3b30', hitColor = '#ff6b35', onHit }: BumperProps) {
   const [isHit, setIsHit] = useState(false)
   const meshRef = useRef<THREE.Mesh>(null)
 
@@ -121,6 +123,8 @@ export function Bumpers({ onHit, force = 5 }: BumpersProps) {
           radius={bumper.radius}
           points={bumper.points}
           force={force}
+          color={bumper.color}
+          hitColor={bumper.hitColor}
           onHit={onHit}
         />
       ))}
