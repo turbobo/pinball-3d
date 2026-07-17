@@ -7,10 +7,12 @@ interface BumperProps {
   position: [number, number, number]
   radius?: number
   points?: number
+  color?: string
+  hitColor?: string
   onHit?: (points: number, position: THREE.Vector3) => void
 }
 
-export function Bumper({ position, radius = 0.4, points = 100, onHit }: BumperProps) {
+export function Bumper({ position, radius = 0.4, points = 100, color = '#ff3b30', hitColor = '#ff6b35', onHit }: BumperProps) {
   const [isHit, setIsHit] = useState(false)
   const meshRef = useRef<THREE.Mesh>(null)
 
@@ -56,27 +58,27 @@ export function Bumper({ position, radius = 0.4, points = 100, onHit }: BumperPr
         <meshStandardMaterial transparent opacity={0} />
       </mesh>
       
-      {/* 视觉模型 */}
+      {/* 视觉模型 - Windows 弹球风格彩色弹珠台 */}
       <mesh ref={meshRef} position={position} castShadow>
         <cylinderGeometry args={[radius, radius, 0.3, 16]} />
         <meshStandardMaterial
-          color={isHit ? '#ff6b35' : '#c0c0c0'}
-          metalness={0.8}
+          color={isHit ? hitColor : color}
+          metalness={0.7}
           roughness={0.2}
-          emissive={isHit ? '#ff6b35' : '#404040'}
-          emissiveIntensity={isHit ? 0.8 : 0.3}
+          emissive={isHit ? hitColor : color}
+          emissiveIntensity={isHit ? 1.0 : 0.4}
         />
       </mesh>
       
-      {/* 顶部装饰 */}
+      {/* 顶部装饰 - 金属质感 */}
       <mesh position={[position[0], position[1] + 0.2, position[2]]}>
         <cylinderGeometry args={[radius * 0.6, radius * 0.6, 0.1, 16]} />
         <meshStandardMaterial
-          color={isHit ? '#ffd700' : '#808080'}
+          color={isHit ? '#ffd700' : '#d0d0d0'}
           metalness={0.9}
           roughness={0.1}
-          emissive={isHit ? '#ffd700' : '#606060'}
-          emissiveIntensity={isHit ? 0.8 : 0.2}
+          emissive={isHit ? '#ffd700' : '#808080'}
+          emissiveIntensity={isHit ? 1.0 : 0.3}
         />
       </mesh>
     </group>
@@ -88,18 +90,25 @@ interface BumpersProps {
 }
 
 export function Bumpers({ onHit }: BumpersProps) {
-  const bumperPositions: Array<{ pos: [number, number, number]; radius: number; points: number }> = [
-    // 顶部三角形布局
-    { pos: [0, 2, 0], radius: 0.5, points: 100 },
-    { pos: [-1.2, 1.2, 0], radius: 0.4, points: 100 },
-    { pos: [1.2, 1.2, 0], radius: 0.4, points: 100 },
+  // Windows 弹球风格：红、黄、绿彩色弹珠台
+  const bumperPositions: Array<{ 
+    pos: [number, number, number]
+    radius: number
+    points: number
+    color: string
+    hitColor: string
+  }> = [
+    // 顶部三角形布局 - 红色高分区
+    { pos: [0, 2, 0], radius: 0.5, points: 100, color: '#ff3b30', hitColor: '#ff6b35' },
+    { pos: [-1.2, 1.2, 0], radius: 0.4, points: 100, color: '#ff3b30', hitColor: '#ff6b35' },
+    { pos: [1.2, 1.2, 0], radius: 0.4, points: 100, color: '#ff3b30', hitColor: '#ff6b35' },
     
-    // 中部弹珠台
-    { pos: [-2, 0, 0], radius: 0.35, points: 50 },
-    { pos: [2, 0, 0], radius: 0.35, points: 50 },
+    // 中部弹珠台 - 黄色中分区
+    { pos: [-2, 0, 0], radius: 0.35, points: 50, color: '#ffcc00', hitColor: '#ffed4e' },
+    { pos: [2, 0, 0], radius: 0.35, points: 50, color: '#ffcc00', hitColor: '#ffed4e' },
     
-    // 特殊高分目标
-    { pos: [0, 3.5, 0], radius: 0.6, points: 500 },
+    // 特殊高分目标 - 绿色超高分
+    { pos: [0, 3.5, 0], radius: 0.6, points: 500, color: '#34c759', hitColor: '#30d158' },
   ]
 
   return (
@@ -110,6 +119,8 @@ export function Bumpers({ onHit }: BumpersProps) {
           position={bumper.pos}
           radius={bumper.radius}
           points={bumper.points}
+          color={bumper.color}
+          hitColor={bumper.hitColor}
           onHit={onHit}
         />
       ))}

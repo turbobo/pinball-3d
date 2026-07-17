@@ -19,9 +19,9 @@ function TableWall({ position, rotation, args }: {
     <mesh ref={ref as any}>
       <boxGeometry args={args} />
       <meshStandardMaterial
-        color="#2a2a2a"
-        metalness={0.6}
-        roughness={0.4}
+        color="#1a2332"
+        metalness={0.7}
+        roughness={0.3}
       />
     </mesh>
   )
@@ -45,9 +45,9 @@ function Drain({ onDrain }: { onDrain?: () => void }) {
     <mesh ref={ref as any}>
       <boxGeometry args={[4, 0.1, 2]} />
       <meshStandardMaterial
-        color="#1a1a1a"
-        metalness={0.5}
-        roughness={0.6}
+        color="#0a1628"
+        metalness={0.6}
+        roughness={0.5}
       />
     </mesh>
   )
@@ -60,13 +60,13 @@ interface PinballTableProps {
 export function PinballTable({ onDrain }: PinballTableProps) {
   return (
     <group>
-      {/* 弹珠台底板 */}
+      {/* 弹珠台底板 - Windows 弹球风格深蓝 */}
       <mesh position={[0, 0, -0.1]} receiveShadow>
         <boxGeometry args={[6, 10, 0.1]} />
         <meshStandardMaterial
-          color="#1a1a1a"
-          metalness={0.5}
-          roughness={0.6}
+          color="#0f1828"
+          metalness={0.6}
+          roughness={0.4}
         />
       </mesh>
 
@@ -96,13 +96,13 @@ export function PinballTable({ onDrain }: PinballTableProps) {
       {/* 排水口 */}
       <Drain onDrain={onDrain} />
 
-      {/* 装饰边框 */}
+      {/* 装饰边框 - 铬合金银色 */}
       <mesh position={[0, 0, 0.15]}>
         <boxGeometry args={[6.2, 10.2, 0.05]} />
         <meshStandardMaterial
-          color="#c0c0c0"
-          metalness={0.8}
-          roughness={0.2}
+          color="#e0e0e0"
+          metalness={0.9}
+          roughness={0.1}
         />
       </mesh>
     </group>
