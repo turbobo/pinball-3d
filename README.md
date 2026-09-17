@@ -88,3 +88,15 @@ npm run dev
 ```
 
 访问 http://localhost:5173
+
+构建：`npm run build`（`tsc -b && vite build`），产物输出到 `dist/`。
+
+## 依赖源约定（强制）
+
+本仓库禁止使用任何内网 / 私有源，依赖必须来自公网：
+
+- npm 源由 `.npmrc` 固定为 `registry=https://registry.npmmirror.com`（公网镜像）
+- `package-lock.json` 的 `resolved` 必须全部为公网地址，且包含 Linux 平台二进制
+- 变更依赖后需确认 lockfile 未被写入内网 registry，否则公有云 CI 无法安装
+
+完整规则见工作区根目录 `.qoder/rules/no-intranet-resources.md`。
